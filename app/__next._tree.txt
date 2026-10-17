@@ -1,2 +1,2 @@
-:HL["/cloud-optimizer-docs/app/_next/static/chunks/36f8cu30sf2pt.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"kDFn4S0-2BOfQFnqjry_D"}
+:HL["/cloud-optimizer-docs/app/_next/static/chunks/1zcmswy26p9o7.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"KE-5mXTeI-g8gBWQs6rRs"}

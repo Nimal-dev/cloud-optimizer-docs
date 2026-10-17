@@ -443,3 +443,7 @@ footer {
     text-align: left;
 }
 .doc-table th { background: #f1f5f9; color: #0f172a; }
+
+.live-btn.alt { background: #059669; margin-left: 0.4rem; }
+.live-btn.alt:hover { background: #047857; }
+.logo .live-btn.alt { margin-left: 0; }
