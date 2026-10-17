@@ -13,15 +13,19 @@
             <div class="logo">
                 <h2>Cloud Optimizer</h2>
                 <p>Documentation</p>
+                <a class="live-btn" href="app/">Open the interactive site &rarr;</a>
             </div>
             <ul class="nav-links">
                 <li><a href="#overview" class="active">Project Overview</a></li>
+                <li><a href="#watch">Video &amp; Live Site</a></li>
                 <li><a href="#literature">Literature Review</a></li>
                 <li><a href="#technologies">Technologies Used</a></li>
-                <li><a href="#architecture">Architecture & Workflow</a></li>
+                <li><a href="#architecture">Architecture &amp; Workflow</a></li>
                 <li><a href="#code-walkthrough">Code Walkthrough</a></li>
+                <li><a href="#results">Results &amp; Accuracy</a></li>
+                <li><a href="#demo-data">Demo Datasets</a></li>
                 <li><a href="#setup">How to Run</a></li>
-                <li><a href="#lessons">Lessons & Takeaways</a></li>
+                <li><a href="#lessons">Lessons &amp; Takeaways</a></li>
                 <li><a href="#resources">Learning Resources</a></li>
             </ul>
         </nav>
@@ -29,240 +33,298 @@
         <main class="content">
             <header>
                 <h1>Cloud Resource Optimizer</h1>
-                <p class="subtitle">AI-driven predictive scaling and resource consolidation for cloud infrastructure.</p>
+                <p class="subtitle">AI-driven forecasting of server usage and resource consolidation for cloud infrastructure.</p>
             </header>
 
             <section id="overview">
                 <h2>1. Project Overview</h2>
-                <p>The <strong>Cloud Resource Optimizer</strong> is an intelligent system designed to reduce cloud computing costs by predicting future CPU and memory usage of servers. By analyzing historical telemetry data, the system identifies underutilized resources, predicts future workloads, and recommends downsizing or decommissioning instances.</p>
+                <p>The <strong>Cloud Resource Optimizer</strong> is an intelligent system designed to reduce cloud computing costs by predicting future CPU and memory usage of servers. By analyzing historical telemetry data, the system forecasts each server's next 4 hours, identifies under-utilized resources, and recommends whether to <strong>keep</strong>, <strong>right-size</strong> or <strong>shut down</strong> each instance, with an estimated monthly saving.</p>
                 <div class="note">
-                    <strong>Note on Project Phases:</strong> 
+                    <strong>Note on Project Phases:</strong>
                     <br>
-                    <strong>Phase 1 (Current):</strong> The current build serves as a demo, predicting usage based on historical telemetry CSV datasets (Bitbrains dataset).
+                    <strong>Phase 1 (Complete):</strong> Upload a CSV of historical telemetry (Bitbrains dataset format or a normal comma-separated file). A hybrid AI model forecasts the next 4 hours for every server and a rule engine turns the forecast into recommendations on an interactive dashboard.
                     <br>
-                    <strong>Phase 2 (Final):</strong> The final project will implement a live server log injecting simulator, fetching and processing live client server logs for real-time predictions and visualizations.
+                    <strong>Phase 2 (Final):</strong> A live server log injecting simulator: Python scripts act as servers and stream readings to an ingest API, stored in a MongoDB time-series collection, with predictions re-computed and pushed to a live dashboard in real time.
                 </div>
             </section>
 
+            <section id="watch">
+                <h2>2. Video &amp; Live Site</h2>
+                <p>A narrated walkthrough of the whole project (7 minutes). The interactive site has the same video split into 9 chapters, interactive visualizations, a glossary and a quiz.</p>
+                <div class="video-wrap">
+                    <video controls preload="metadata" poster="app/videos/full.jpg">
+                        <source src="app/videos/full.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <p class="center"><a class="live-btn big" href="app/learn/">Explore the interactive Learn section &rarr;</a></p>
+                <div class="note">The online site shows the project, the Learn section and the model's measured accuracy. Analysing CSV files needs the Python backend with the trained models, so the <strong>dashboard runs locally</strong> (see <a href="#setup">How to Run</a>).</div>
+            </section>
+
             <section id="literature">
-                <h2>2. Literature Review</h2>
+                <h2>3. Literature Review</h2>
                 <p>The field of cloud resource optimization has evolved significantly, transitioning from reactive threshold-based methods to proactive, AI-driven forecasting. This project builds upon several key areas of research:</p>
-                
+
                 <div class="tech-card" style="margin-bottom: 1rem;">
                     <h3>1. Traditional Reactive Auto-Scaling</h3>
                     <p>Historically, cloud providers relied on simple rule-based scaling (e.g., "scale up if CPU > 80%"). Research by <em>Lorido-Botran et al. (2014)</em> highlighted that reactive systems suffer from cold-start delays, leading to degraded performance during sudden traffic spikes, or excessive costs when scaling down too slowly.</p>
                 </div>
-                
+
                 <div class="tech-card" style="margin-bottom: 1rem;">
                     <h3>2. Statistical Time-Series Analysis</h3>
                     <p>To move towards proactive scaling, statistical models like ARIMA (AutoRegressive Integrated Moving Average) were introduced. While effective for linear trends, studies such as <em>Calheiros et al. (2015)</em> demonstrated that these models struggle to capture the non-linear, highly volatile, and cyclical nature of modern web workloads.</p>
                 </div>
-                
+
+                <div class="tech-card" style="margin-bottom: 1rem;">
+                    <h3>3. Deep Learning &amp; LSTMs in Cloud Computing</h3>
+                    <p>Recent literature heavily favors Recurrent Neural Networks (RNNs) and specifically <strong>Long Short-Term Memory (LSTM)</strong> networks for workload prediction. LSTMs solve the "vanishing gradient" problem of standard RNNs, allowing them to remember long-term dependencies. A landmark study by <em>Kumar et al. (2018)</em> proved that LSTMs significantly outperform ARIMA in predicting CPU utilization on the Bitbrains dataset. Our project uses a <strong>CNN-LSTM</strong> (a 1-D convolution followed by an LSTM) to forecast server memory over a 4-hour horizon.</p>
+                </div>
+
                 <div class="tech-card">
-                    <h3>3. Deep Learning & LSTMs in Cloud Computing</h3>
-                    <p>Recent literature heavily favors Recurrent Neural Networks (RNNs) and specifically <strong>Long Short-Term Memory (LSTM)</strong> networks for workload prediction. LSTMs solve the "vanishing gradient" problem of standard RNNs, allowing them to remember long-term dependencies. A landmark study by <em>Kumar et al. (2018)</em> proved that LSTMs significantly outperform ARIMA in predicting CPU utilization on the Bitbrains dataset. Our project extends this research by implementing a <strong>Bidirectional LSTM</strong> with a <strong>Multi-Output</strong> head to simultaneously forecast both CPU and Memory, bridging the gap between theoretical ML accuracy and practical business logic.</p>
+                    <h3>4. Gradient Boosting &amp; Quantile Forecasting</h3>
+                    <p><em>Friedman (2001)</em> introduced gradient boosting: many small decision trees trained one after another, each correcting the errors of the previous ones. With hand-crafted time-series features it is a strong forecaster for noisy data. <em>Koenker &amp; Bassett (1978)</em> introduced quantile regression, which predicts a chosen percentile instead of only the average. Our project combines both: gradient-boosted trees forecast CPU, and every forecast has a <strong>P50</strong> (most likely) and a <strong>P90</strong> (safety limit) value, so right-sizing decisions can account for uncertainty.</p>
                 </div>
             </section>
 
             <section id="technologies">
-                <h2>3. Technologies Used</h2>
+                <h2>4. Technologies Used</h2>
                 <div class="tech-grid">
                     <div class="tech-card">
                         <h3>Backend</h3>
                         <ul>
                             <li><strong>FastAPI (Python):</strong> High-performance async framework for the API layer, chosen for its speed and native support for data validation.</li>
-                            <li><strong>TensorFlow & Keras:</strong> Used to build and train the deep learning predictive models.</li>
-                            <li><strong>Pandas, NumPy, Scikit-Learn:</strong> Essential data processing, scaling (MinMaxScaler), and numerical analysis libraries.</li>
+                            <li><strong>TensorFlow &amp; Keras:</strong> Used to build and train the CNN-LSTM neural network (memory forecast).</li>
+                            <li><strong>Scikit-Learn:</strong> <code>HistGradientBoostingRegressor</code> for the CPU forecast (P50 and P90 quantile models).</li>
+                            <li><strong>Pandas &amp; NumPy:</strong> Data cleaning, windowing and per-server normalisation.</li>
                         </ul>
                     </div>
                     <div class="tech-card">
                         <h3>Frontend</h3>
                         <ul>
-                            <li><strong>Next.js (React):</strong> Server-side rendered React framework ensuring fast load times and a robust component architecture.</li>
+                            <li><strong>Next.js (React):</strong> Component-based React framework for the Home, Learn, Dashboard and Admin pages.</li>
                             <li><strong>Tailwind CSS:</strong> Utility-first CSS framework for rapid and modern UI styling.</li>
-                            <li><strong>Recharts:</strong> Composable charting library for rendering complex time-series forecast visualizations.</li>
+                            <li><strong>Recharts:</strong> Composable charting library for the history, P50/P90 forecast bands and interactive learning visuals.</li>
                         </ul>
                     </div>
                     <div class="tech-card">
                         <h3>Database</h3>
                         <ul>
-                            <li><strong>MongoDB:</strong> A NoSQL document database. Selected for its flexibility in handling unstructured or semi-structured telemetry data and server logs securely and efficiently.</li>
+                            <li><strong>MongoDB:</strong> A NoSQL document database for user accounts (with a local JSON fallback) and, in Phase 2, a time-series collection for live server readings.</li>
                         </ul>
                     </div>
                 </div>
             </section>
 
             <section id="architecture">
-                <h2>4. System Architecture, Algorithms & Workflow</h2>
-                
-                <h3>Project Workflow</h3>
-                <p>The application follows a seamless, real-time data flow from the client interface down to the AI model and back. Below is the step-by-step workflow of the system:</p>
-                
+                <h2>5. System Architecture, Algorithms &amp; Workflow</h2>
+
+                <h3>Project Workflow (Phase 1)</h3>
+                <p>The application follows a clear data flow from the client interface down to the AI models and back:</p>
+
                 <div class="workflow-diagram">
                     <div class="workflow-step">
                         <div class="step-number">1</div>
                         <div class="step-content">
-                            <strong>Data Ingestion & Storage:</strong> Server telemetry data (and eventually live logs via the Phase 2 simulator) is ingested and securely stored in <strong>MongoDB</strong>.
+                            <strong>Upload:</strong> The user signs in to the <strong>Next.js</strong> dashboard and uploads a telemetry CSV (or clicks a sample dataset). The file is sent to the <strong>FastAPI</strong> backend.
                         </div>
                     </div>
                     <div class="workflow-step">
                         <div class="step-number">2</div>
                         <div class="step-content">
-                            <strong>Client Request:</strong> The user accesses the <strong>Next.js</strong> dashboard, which makes an asynchronous REST API call to the <strong>FastAPI</strong> backend.
+                            <strong>Parsing &amp; Cleaning:</strong> <code>upload.py</code> reads Bitbrains or comma-separated files, splits the rows by server, keeps the most recent readings, keeps CPU within 0&ndash;100% and requires at least 2 hours of history.
                         </div>
                     </div>
                     <div class="workflow-step">
                         <div class="step-number">3</div>
                         <div class="step-content">
-                            <strong>Data Preprocessing:</strong> FastAPI fetches the last 24 historical data points from MongoDB, and scales the features using the saved <code>MinMaxScaler</code>.
+                            <strong>Feature Preparation:</strong> The last 24 hours (288 readings) of each server are turned into model inputs: CPU, memory relative to the server's own recent level, and the time of day.
                         </div>
                     </div>
                     <div class="workflow-step">
                         <div class="step-number">4</div>
                         <div class="step-content">
-                            <strong>AI Inference (LSTM):</strong> The <code>ml_engine.py</code> runs an autoregressive loop on the Bidirectional LSTM model, generating 48 future time steps for both CPU and Memory.
+                            <strong>AI Inference (Hybrid):</strong> <code>ml_engine.py</code> forecasts all 48 future steps (4 hours) in one pass: gradient-boosted trees for CPU and the CNN-LSTM for memory, each with P50 and P90 values.
                         </div>
                     </div>
                     <div class="workflow-step">
                         <div class="step-number">5</div>
                         <div class="step-content">
-                            <strong>Business Logic:</strong> The <code>rule_engine.py</code> analyzes the predictions, categorizes the server (Active, Right-size, Zombie), and calculates exact USD savings.
+                            <strong>Business Logic:</strong> <code>rule_engine.py</code> combines history and forecast into an <em>expected load</em> and a <em>busy level</em>, classifies the server (Active, Right-size, Shut down) and estimates the monthly saving.
                         </div>
                     </div>
                     <div class="workflow-step">
                         <div class="step-number">6</div>
                         <div class="step-content">
-                            <strong>Visualization:</strong> The Next.js frontend receives the JSON response and dynamically renders the interactive charts using <strong>Recharts</strong>.
+                            <strong>Visualization:</strong> The dashboard renders each server's history, forecast and P50&ndash;P90 band with <strong>Recharts</strong>, explains every decision, and exports a CSV report.
                         </div>
                     </div>
                 </div>
 
-                <h3>Final System Architecture Diagram</h3>
-                <p>The diagram below showcases the end-to-end target architecture of the project, highlighting the <strong>Live Server Log Injecting Simulator</strong> feeding real-time metric streams into MongoDB, processed asynchronously by FastAPI, the Bidirectional LSTM Engine, and the Optimization Rule Engine:</p>
+                <h3>System Architecture Diagram</h3>
+                <p>The diagram shows the Phase 1 pipeline that is built and running, and the Phase 2 live-streaming path (simulators, ingest API, MongoDB time-series, live dashboard) that reuses the same AI engine and rule engine:</p>
                 <div class="arch-diagram-container">
-                    <img src="architecture_diagram.jpg" alt="Cloud Resource Optimizer Final Architecture Diagram" class="arch-diagram-img">
+                    <img src="architecture_diagram.svg" alt="Cloud Resource Optimizer system architecture diagram" class="arch-diagram-img">
                 </div>
 
-                <h3>Architecture & Algorithms</h3>
-                <p>The system operates through a streamlined data pipeline connecting the machine learning engine to a rule-based decision module.</p>
-                
-                <h3>Multi-Output Bidirectional LSTM</h3>
-                <p>The core intelligence is powered by a <strong>Bidirectional Stacked LSTM (Long Short-Term Memory)</strong> neural network. Instead of analyzing time sequentially, a bidirectional LSTM analyzes the data in both directions (past to future and future to past), capturing complex cyclical patterns in server workloads.</p>
+                <h3>Hybrid AI Forecaster</h3>
+                <p>Two models work as a team, each on the signal where it is most accurate:</p>
                 <ul>
-                    <li><strong>Inputs:</strong> The model ingests a sliding window of the last 24 timesteps of CPU percentage and Memory (KB).</li>
-                    <li><strong>Outputs:</strong> It utilizes a multi-output architecture to simultaneously predict future steps for both CPU and Memory.</li>
-                    <li><strong>Residual Wave Processing:</strong> A high-frequency residual wave offset is applied to predictions to accurately simulate micro-variances seen in real server environments.</li>
+                    <li><strong>CPU &rarr; Gradient-boosted trees:</strong> hundreds of small decision trees built one after another. They receive clear clues: recent values and averages, volatility and min/max, time of day, and the reading at the same time yesterday.</li>
+                    <li><strong>Memory &rarr; CNN-LSTM:</strong> a 1-D convolution finds short patterns in the last 24 hours, an LSTM reads them in order, and dense layers output the forecast.</li>
+                    <li><strong>Direct multi-step output:</strong> all 48 future steps are predicted at once instead of one step at a time.</li>
+                    <li><strong>Predicting the change:</strong> both models predict the change from the current level, so a quiet server stays quiet in the forecast.</li>
+                    <li><strong>P50 and P90:</strong> the most likely value and a safety limit that real usage should stay below about 9 times out of 10 (quantile / pinball loss).</li>
                 </ul>
 
                 <h3>Optimization Rule Engine</h3>
-                <p>Predictions generated by the ML model are passed to the <code>rule_engine.py</code>, which categorizes instances to compute monthly cost savings:</p>
+                <p>The forecasts are passed to <code>rule_engine.py</code>, which judges each server on its most recent 24 hours and its forecast:</p>
                 <div class="code-block">
                     <pre><code>// Pseudocode of the Rule Engine Logic
-if (avg_cpu >= 25% OR peak_cpu >= 50%) {
-    status = "ACTIVE";
-    recommendation = "Optimal Sizing (c5.xlarge) - High Utilization";
-} else if (avg_cpu >= 8%) {
-    status = "RIGHT-SIZE";
-    recommendation = "Downsize to t3.micro";
+expected_load = max(avg_cpu_last_24h, forecast_avg_next_4h)
+busy_level    = max(p95_cpu_last_24h, forecast_p90_peak)
+
+if (expected_load >= 25% OR busy_level >= 50%) {
+    status = "ACTIVE";            // keep as it is
+} else if (expected_load >= 8% OR busy_level >= 20%) {
+    status = "RIGHT-SIZE";        // move to a smaller machine
     savings = "$110.00 / month";
 } else {
-    status = "CONSOLIDATE & SHUT DOWN";
-    recommendation = "Decommission Instance (Zombie Server)";
+    status = "CONSOLIDATE & SHUT DOWN";   // zombie server
     savings = "$146.00 / month";
 }</code></pre>
                 </div>
+                <p>Using the 95th percentile instead of the single highest reading means one short spike does not make an idle server look busy. The savings use fixed example prices.</p>
             </section>
 
             <section id="code-walkthrough">
-                <h2>5. Deep Dive: Code Walkthrough</h2>
-                <p>This section provides a detailed, step-by-step explanation of the core files in the backend. You will learn how the data is prepared, how the LSTM model is constructed, and how the business logic interprets the AI predictions.</p>
+                <h2>6. Deep Dive: Code Walkthrough</h2>
+                <p>This section explains the core backend files: how data is prepared, how the two models are built, and how the business logic interprets the predictions.</p>
 
-                <h3>A. Model Training (<code>train_lstm.py</code>)</h3>
-                <p>This file is responsible for ingesting server logs and training the Bidirectional LSTM model.</p>
-                
-                <h4>1. Data Preparation & Windowing</h4>
+                <h3>A. Data Preparation (<code>forecast_model.py</code>)</h3>
                 <div class="code-block">
-                    <pre><code>def create_sequences_multi_output(data, seq_len, stride=3):
-    n = len(data)
-    indices = np.arange(0, n - seq_len, stride)
-    
-    X = np.array([data[i : i + seq_len] for i in indices], dtype=np.float32)
-    y = np.array([data[i + seq_len] for i in indices], dtype=np.float32) 
-    return X, y</code></pre>
+                    <pre><code>def make_features(cpu, mem, ts):
+    cpu = np.clip(np.array(cpu, dtype=np.float64), 0, 100)
+    mem = np.maximum(np.array(mem, dtype=np.float64), 0)
+    if len(cpu) >= 3:                      # de-spike the newest reading
+        cpu[-1] = np.median(cpu[-3:])
+        mem[-1] = np.median(mem[-3:])
+    mem_ref = max(float(mem[-24:].mean()), 1.0)
+    tod = (to_seconds(ts) % 86400) / 86400 * 2 * np.pi
+    feats = np.stack([cpu / 100.0, np.clip(mem / mem_ref, 0, MEM_RATIO_CLIP),
+                      np.sin(tod), np.cos(tod)], 1)
+    return feats.astype(np.float32), mem_ref</code></pre>
                 </div>
                 <ul>
-                    <li><strong>Concept:</strong> Time-series forecasting requires converting sequential data into a supervised learning format.</li>
-                    <li><strong>Explanation:</strong> The <code>create_sequences_multi_output</code> function creates sliding windows. For every 24 steps (<code>seq_len</code>), the model uses them to predict the 25th step (both CPU and Memory). The <code>stride=3</code> means the window jumps forward 3 steps at a time to reduce data redundancy.</li>
+                    <li><strong>Per-server normalisation:</strong> CPU is scaled to 0&ndash;1 and memory is divided by the server's own recent average, so a 2&nbsp;GB server and a 64&nbsp;GB server look alike to the model.</li>
+                    <li><strong>Time of day:</strong> encoded as sine and cosine so 23:55 and 00:05 are close together.</li>
+                    <li><strong>Windows:</strong> during training (<code>train_lstm.py</code>, <code>train_gbm.py</code>) every window comes from a single server: 24 hours of input and the next 4 hours as the target. Servers are split 520 train / 80 validation / 163 test (never seen).</li>
                 </ul>
 
-                <h4>2. The Neural Network Architecture</h4>
+                <h3>B. The CNN-LSTM (memory)</h3>
                 <div class="code-block">
-                    <pre><code>model = Sequential([
-    Bidirectional(LSTM(128, return_sequences=True), input_shape=(SEQ_LEN, 2)),
-    Dropout(0.2),
-    LSTM(64, return_sequences=False),
-    Dropout(0.2),
-    Dense(32, activation='swish'),
-    Dense(2) # Multi-Output Target: [CPU %, Memory KB]
-])</code></pre>
+                    <pre><code>inp = keras.Input((LOOKBACK, N_FEATURES))                      # 288 steps x 4 features
+x = layers.Conv1D(32, 6, strides=3, activation="gelu")(inp)   # short patterns
+x = layers.LSTM(64)(x)                                        # reads them in order
+z = layers.Concatenate()([x, last, recent])
+z = layers.Dense(128, activation="gelu")(z)
+delta = layers.Dense(HORIZON * 2 * len(QUANTILES))(z)          # 48 steps x (cpu, mem) x (P50, P90)
+out = layers.Add()([base, delta])                              # last value + predicted change</code></pre>
                 </div>
                 <ul>
-                    <li><strong>Bidirectional LSTM:</strong> Wrapping an LSTM in a <code>Bidirectional</code> layer allows the network to process the sequence forwards and backwards, helping it understand context and cyclical spikes better.</li>
-                    <li><strong>Dropout Layers:</strong> <code>Dropout(0.2)</code> randomly turns off 20% of the neurons during training to prevent the model from memorizing the data (overfitting).</li>
-                    <li><strong>Dense(2):</strong> The final output layer has exactly 2 neurons because we are predicting two variables simultaneously: future CPU and Memory.</li>
+                    <li><strong>Loss:</strong> pinball (quantile) loss trains the P50 and P90 outputs at the same time.</li>
+                    <li><strong>Residual output:</strong> the network predicts the change from the last value, which keeps forecasts stable.</li>
                 </ul>
 
-                <h3>B. Real-Time Inference (<code>ml_engine.py</code>)</h3>
-                <p>Once trained, the FastAPI server uses this file to make live predictions when a client requests them.</p>
-
-                <h4>Autoregressive Prediction Loop</h4>
+                <h3>C. The Gradient-Boosted Trees (CPU)</h3>
                 <div class="code-block">
-                    <pre><code>for i in range(future_steps):
-    input_seq = current_window.reshape(1, SEQ_LEN, 2)
-    preds_scaled = self.model.predict(input_seq, verbose=0)[0]
-    
-    # Extract the 2D predictions (CPU & Mem)
-    pred_cpu_s, pred_mem_s = float(preds_scaled[0]), float(preds_scaled[1])
-    
-    # Feed prediction back into sliding window
-    new_row = np.array([[pred_cpu_s, pred_mem_s]])
-    current_window = np.vstack([current_window[1:], new_row])</code></pre>
+                    <pre><code>TREE_PARAMS = dict(max_iter=400, learning_rate=0.06, max_leaf_nodes=63,
+                   min_samples_leaf=80, l2_regularization=1.0, random_state=0)
+t50 = HistGradientBoostingRegressor(loss="absolute_error", **TREE_PARAMS).fit(X, y)
+t90 = HistGradientBoostingRegressor(loss="quantile", quantile=0.9, **TREE_PARAMS).fit(X, y)</code></pre>
                 </div>
                 <ul>
-                    <li><strong>Concept:</strong> Autoregressive forecasting means using your own predictions to make future predictions.</li>
-                    <li><strong>Explanation:</strong> The model predicts the very next step. We take that prediction, append it to the end of our 24-step window, and drop the oldest step (<code>current_window[1:]</code>). We repeat this loop 48 times (<code>future_steps</code>) to forecast far into the future.</li>
+                    <li><strong>Features (<code>cpu_tree_rows</code>):</strong> current level, recent lags, 30&nbsp;min to 24&nbsp;h averages, volatility, min/max, time of day, the forecast step, and the reading at the same time yesterday.</li>
+                    <li><strong>Target:</strong> the CPU change from the current level at the chosen future step. About 1 million training rows from 520 servers.</li>
                 </ul>
 
-                <h3>C. The Business Logic (<code>rule_engine.py</code>)</h3>
-                <p>AI predictions are useless without business logic. The Rule Engine categorizes servers based on the predictions to compute financial savings.</p>
-
+                <h3>D. Real-Time Inference (<code>ml_engine.py</code>)</h3>
                 <div class="code-block">
-                    <pre><code>if avg_cpu >= 25.0 or peak_cpu >= 50.0:
+                    <pre><code>feats, mem_ref = make_features(cpu, mem, ts)
+pred = self.model.predict(feats[None], verbose=0)[0]          # CNN-LSTM
+rows, level = cpu_tree_rows(cpu, ts)                          # trees
+cpu_p50 = np.clip(level + self.trees["p50"].predict(rows), 0, 100)
+cpu_p90 = np.clip(level + self.trees["p90"].predict(rows), 0, 100)
+mem_p50 = np.maximum(pred[:, 1, 0], 0) * mem_ref
+mem_p90 = np.maximum(pred[:, 1, 1], 0) * mem_ref</code></pre>
+                </div>
+                <ul>
+                    <li>One call per server produces the whole 4-hour forecast; no step-by-step loop is needed.</li>
+                </ul>
+
+                <h3>E. The Business Logic (<code>rule_engine.py</code>)</h3>
+                <div class="code-block">
+                    <pre><code>expected_load = max(avg_cpu, avg_future_cpu)
+busy_level = max(p95_cpu, future_p90_peak)
+
+if expected_load >= 25.0 or busy_level >= 50.0:
     status = "ACTIVE"
-    action = "Optimal Sizing (c5.xlarge) - High Utilization"
-elif avg_cpu >= 8.0:
+elif expected_load >= 8.0 or busy_level >= 20.0:
     status = "RIGHT-SIZE"
-    action = "Right-size Tier (c5.large -> t3.micro)"
     monthly_savings = 110.00
 else:
     status = "CONSOLIDATE & SHUT DOWN"
-    action = "Decommission Instance"
     monthly_savings = 146.00</code></pre>
                 </div>
-                <ul>
-                    <li><strong>Explanation:</strong> This is a deterministic rule set. If a server averages less than 8% CPU, the system flags it as a "Zombie" server that should be shut down, instantly calculating a savings of $146.00 per month. If it's lightly used (between 8% and 25%), it recommends downsizing the AWS instance type to save $110.00.</li>
-                </ul>
+            </section>
+
+            <section id="results">
+                <h2>7. Results &amp; Accuracy</h2>
+                <p>Accuracy is measured on <strong>163 servers the models never saw</strong> during training or validation, using 644 four-hour forecast windows (<code>ml_models/model_metrics.json</code>).</p>
+                <div class="stat-grid">
+                    <div class="stat"><span>93.4%</span>CPU predictions within &plusmn;2 percentage points</div>
+                    <div class="stat"><span>1.35 pts</span>average CPU error</div>
+                    <div class="stat"><span>97.4%</span>servers given the right label</div>
+                    <div class="stat"><span>88.5%</span>real readings under the P90 line (target 90%)</div>
+                </div>
+                <h3>Model selection</h3>
+                <p>Both models were evaluated on the same unseen servers; the hybrid uses each where it performed best.</p>
+                <table class="doc-table">
+                    <thead><tr><th>Measure (test servers)</th><th>CNN-LSTM only</th><th>Hybrid (trees CPU + CNN-LSTM memory)</th></tr></thead>
+                    <tbody>
+                        <tr><td>Average CPU error</td><td>1.43 pts</td><td><strong>1.35 pts</strong></td></tr>
+                        <tr><td>CPU within &plusmn;2 points</td><td>93.2%</td><td><strong>93.4%</strong></td></tr>
+                        <tr><td>Correct label</td><td>96.9%</td><td><strong>97.4%</strong></td></tr>
+                        <tr><td>P90 coverage</td><td>88.1%</td><td><strong>88.5%</strong></td></tr>
+                        <tr><td>Memory error (WAPE)</td><td>37.0%</td><td>37.0%</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="demo-data">
+                <h2>8. Demo Datasets</h2>
+                <p>Seven ready-made CSV files in <code>demo_data/</code> (also one-click buttons on the dashboard). Every server is a real Bitbrains virtual machine from the test split, so the model has never seen it. Results below are actual outputs of the system.</p>
+                <table class="doc-table">
+                    <thead><tr><th>File</th><th>What it shows</th><th>Est. saving</th></tr></thead>
+                    <tbody>
+                        <tr><td>01_startup_3_servers</td><td>One active, one right-size, one shut-down server</td><td>$256 / month</td></tr>
+                        <tr><td>02_enterprise_10_servers</td><td>A realistic mix of 10 servers, incl. a day/night rhythm</td><td>$878 / month</td></tr>
+                        <tr><td>03_zombie_cleanup_8_servers</td><td>Mostly idle servers: large savings</td><td>$876 / month</td></tr>
+                        <tr><td>04_healthy_cluster_5_servers</td><td>All busy: no cuts recommended</td><td>$0</td></tr>
+                        <tr><td>05_servers_that_went_idle</td><td>Busy earlier, idle now: judged on recent behaviour</td><td>$292 / month</td></tr>
+                        <tr><td>06_daily_pattern_servers</td><td>Daily rhythm, shown in the forecast view</td><td>$220 / month</td></tr>
+                        <tr><td>07_bitbrains_raw_format</td><td>Original Bitbrains file format is accepted</td><td>$0</td></tr>
+                    </tbody>
+                </table>
             </section>
 
             <section id="setup">
-                <h2>6. How to Run the Project</h2>
-                <p>Follow these step-by-step instructions to run both the FastAPI backend and Next.js frontend locally. Everything runs locally and no external API keys are required.</p>
+                <h2>9. How to Run the Project</h2>
+                <p>Everything runs locally and no internet or external API keys are required.</p>
 
                 <h3>Prerequisites</h3>
                 <ul>
-                    <li>Python 3.8+</li>
-                    <li>Node.js (v18+) and npm/yarn/pnpm</li>
-                    <li>MongoDB (running locally on default port 27017)</li>
+                    <li>Python 3.10+ (the project venv uses 3.13)</li>
+                    <li>Node.js (v18+) and npm</li>
+                    <li>MongoDB is optional: without it, accounts are stored in <code>backend/data/users.json</code></li>
                 </ul>
 
                 <h3>Backend Setup</h3>
@@ -272,13 +334,13 @@ cd cloud-resource-optimizer/backend
 
 # 2. Create and activate a virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+venv\Scripts\activate          # macOS/Linux: source venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
 
 # 4. Start the FastAPI server
-uvicorn app.main:app --reload</code></pre>
+uvicorn app.main:app --port 8000</code></pre>
                 </div>
 
                 <h3>Frontend Setup</h3>
@@ -289,26 +351,35 @@ cd cloud-resource-optimizer/frontend
 # 2. Install dependencies
 npm install
 
-# 3. Start the Next.js development server
-npm run dev</code></pre>
+# 3. Build and start the website
+npm run build
+npm run start                  # or: npm run dev</code></pre>
                 </div>
-                <p>Once running, access the web interface at <a href="http://localhost:3000" target="_blank">http://localhost:3000</a>.</p>
+                <p>Open <a href="http://localhost:3000" target="_blank">http://localhost:3000</a>. Demo accounts: <code>admin / admin123</code> (approves clients) and <code>demo_client / client123</code> (uses the dashboard).</p>
+
+                <h3>Retraining the models</h3>
+                <div class="code-block">
+                    <pre><code>python ml_models/train_lstm.py     # CNN-LSTM (memory)
+python ml_models/train_gbm.py      # CPU trees + hybrid accuracy report
+python scripts/create_demo_csvs.py # rebuild the demo datasets</code></pre>
+                </div>
             </section>
 
             <section id="lessons">
-                <h2>7. Learning Lessons & Takeaways</h2>
-                <p>Developing the Cloud Resource Optimizer offered profound insights into merging deep learning with full-stack engineering:</p>
+                <h2>10. Learning Lessons &amp; Takeaways</h2>
+                <p>Developing the Cloud Resource Optimizer offered profound insights into merging machine learning with full-stack engineering:</p>
                 <ul>
-                    <li><strong>LSTM Complexity & Hurdles:</strong> Building and tuning the <em>Multi-Output Bidirectional LSTM</em> model was a significant hurdle. Ensuring that the neural network accurately predicted both CPU and Memory simultaneously without overfitting required careful balancing of layers, dropout rates, and learning rates using the <code>AdamW</code> optimizer.</li>
-                    <li><strong>Time-Series Data Handling:</strong> Standardizing disparate server CSV files and creating a vectorized sliding window generator was vital for high-performance training. Handling the complex input sequence shapes reinforced best practices in matrix transformations and data scaling.</li>
-                    <li><strong>Actionable AI & Business Logic:</strong> The project demonstrated that raw ML predictions are most valuable when integrated with decisive business logic. By passing LSTM outputs through a deterministic Rule Engine, abstract metrics were successfully converted into tangible, real-world cloud cost savings.</li>
+                    <li><strong>Choosing the right model for each signal:</strong> Comparing a deep learning model and gradient-boosted trees on servers never seen in training showed that each has strengths. A hybrid (trees for CPU, CNN-LSTM for memory) gave the best overall result.</li>
+                    <li><strong>Time-Series Data Handling:</strong> Building windows per server, normalising each server against its own level and adding time-of-day features were essential for reliable training. Keeping a separate, never-seen test set made the accuracy numbers honest.</li>
+                    <li><strong>Forecasting with uncertainty:</strong> Predicting a P90 safety limit next to the most likely value (P50) makes right-sizing decisions safer than a single number.</li>
+                    <li><strong>Actionable AI &amp; Business Logic:</strong> Raw ML predictions are most valuable when integrated with decisive business logic. By passing the forecasts through a deterministic Rule Engine, abstract metrics become tangible, explainable cloud cost savings.</li>
                 </ul>
             </section>
 
             <section id="resources">
-                <h2>8. Learning Resources</h2>
+                <h2>11. Learning Resources</h2>
                 <p>If you're new to the technologies used in this project, here are some excellent crash courses to get you started:</p>
-                
+
                 <div class="video-grid">
                     <div class="video-card">
                         <h3>FastAPI</h3>
@@ -316,21 +387,21 @@ npm run dev</code></pre>
                             <iframe src="https://www.youtube-nocookie.com/embed/0sOvCWFmrtA" title="FastAPI Crash Course" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         </div>
                     </div>
-                    
+
                     <div class="video-card">
                         <h3>Next.js</h3>
                         <div class="iframe-container">
                             <iframe src="https://www.youtube-nocookie.com/embed/ZVnjOPwW4ZA" title="Next.js Crash Course" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         </div>
                     </div>
-                    
+
                     <div class="video-card">
                         <h3>TensorFlow</h3>
                         <div class="iframe-container">
                             <iframe src="https://www.youtube-nocookie.com/embed/tPYj3fFJGjk" title="TensorFlow Crash Course" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         </div>
                     </div>
-                    
+
                     <div class="video-card">
                         <h3>MongoDB</h3>
                         <div class="iframe-container">
@@ -339,7 +410,7 @@ npm run dev</code></pre>
                     </div>
                 </div>
             </section>
-            
+
             <footer>
                 <p>&copy; 2026 Cloud Resource Optimizer Documentation.</p>
             </footer>

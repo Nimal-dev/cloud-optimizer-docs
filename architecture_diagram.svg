@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" font-family="Inter, Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker>
+    <marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#a855f7"/></marker>
+    <style>
+      .box{fill:#111a2e;stroke-width:2;rx:14}
+      .t{fill:#f1f5f9;font-size:17px;font-weight:700;text-anchor:middle}
+      .s{fill:#94a3b8;font-size:12.5px;text-anchor:middle}
+      .lane{fill:#cbd5e1;font-size:14px;font-weight:700}
+      .ln{stroke:#94a3b8;stroke-width:2.2;fill:none;marker-end:url(#a)}
+      .lp{stroke:#a855f7;stroke-width:2.2;fill:none;stroke-dasharray:7 6;marker-end:url(#p)}
+    </style>
+  </defs>
+  <rect width="1200" height="640" rx="18" fill="#0b1220"/>
+  <text x="600" y="44" fill="#f8fafc" font-size="26" font-weight="800" text-anchor="middle">Cloud Resource Optimizer: System Architecture</text>
+
+  <!-- Phase 1 lane -->
+  <text x="30" y="92" class="lane">PHASE 1: built (CSV upload)</text>
+  <rect x="30" y="110" width="200" height="150" class="box" stroke="#3b82f6"/>
+  <text x="130" y="145" class="t">Next.js website</text>
+  <text x="130" y="172" class="s">upload CSV or pick</text>
+  <text x="130" y="190" class="s">a sample dataset</text>
+  <text x="130" y="220" class="s">Home · Learn · Dashboard</text>
+
+  <rect x="265" y="110" width="200" height="150" class="box" stroke="#a855f7"/>
+  <text x="365" y="145" class="t">FastAPI backend</text>
+  <text x="365" y="172" class="s">read Bitbrains or comma CSV</text>
+  <text x="365" y="190" class="s">split by server, clean</text>
+  <text x="365" y="208" class="s">latest 24 h per server</text>
+  <text x="365" y="236" class="s">auth · model info</text>
+
+  <rect x="500" y="110" width="250" height="235" class="box" stroke="#10b981"/>
+  <text x="625" y="145" class="t">Hybrid AI engine</text>
+  <rect x="518" y="160" width="214" height="72" rx="10" fill="#0f2a22" stroke="#10b981"/>
+  <text x="625" y="185" class="s" fill="#6ee7b7" style="fill:#6ee7b7;font-weight:700">CPU → gradient-boosted trees</text>
+  <text x="625" y="205" class="s">clues: recent levels, spikes,</text>
+  <text x="625" y="222" class="s">time of day, same time yesterday</text>
+  <rect x="518" y="242" width="214" height="62" rx="10" fill="#1f1733" stroke="#a855f7"/>
+  <text x="625" y="267" class="s" style="fill:#d8b4fe;font-weight:700">Memory → CNN-LSTM</text>
+  <text x="625" y="287" class="s">Conv1D + LSTM neural network</text>
+  <text x="625" y="330" class="s">48 steps (4 h) · P50 + P90</text>
+
+  <rect x="785" y="110" width="185" height="150" class="box" stroke="#f59e0b"/>
+  <text x="877" y="145" class="t">Rule engine</text>
+  <text x="877" y="172" class="s">expected load</text>
+  <text x="877" y="190" class="s">busy level (p95 / P90)</text>
+  <text x="877" y="218" class="s">keep · right-size</text>
+  <text x="877" y="236" class="s">shut down · savings</text>
+
+  <rect x="1005" y="110" width="165" height="150" class="box" stroke="#22d3ee"/>
+  <text x="1087" y="145" class="t">Dashboard</text>
+  <text x="1087" y="172" class="s">forecast charts</text>
+  <text x="1087" y="190" class="s">why this decision?</text>
+  <text x="1087" y="208" class="s">savings · report</text>
+  <text x="1087" y="226" class="s">CSV export</text>
+
+  <path d="M230 185 H262" class="ln"/>
+  <path d="M465 185 H497" class="ln"/>
+  <path d="M750 185 H782" class="ln"/>
+  <path d="M970 185 H1002" class="ln"/>
+
+  <!-- Phase 2 lane -->
+  <text x="30" y="402" class="lane" style="fill:#d8b4fe">PHASE 2: planned (live servers)</text>
+  <rect x="30" y="420" width="200" height="150" class="box" stroke="#a855f7" stroke-dasharray="7 6"/>
+  <text x="130" y="455" class="t">Server simulators</text>
+  <text x="130" y="482" class="s">Python scripts replay</text>
+  <text x="130" y="500" class="s">real Bitbrains readings</text>
+  <text x="130" y="528" class="s">1 reading / second</text>
+
+  <rect x="265" y="420" width="200" height="150" class="box" stroke="#a855f7" stroke-dasharray="7 6"/>
+  <text x="365" y="455" class="t">Ingest API</text>
+  <text x="365" y="482" class="s">POST /api/v1/ingest</text>
+  <text x="365" y="500" class="s">server id + API key</text>
+
+  <rect x="500" y="420" width="250" height="150" class="box" stroke="#a855f7" stroke-dasharray="7 6"/>
+  <text x="625" y="455" class="t">MongoDB time-series</text>
+  <text x="625" y="482" class="s">stores every reading</text>
+  <text x="625" y="500" class="s">rolling 24 h per server</text>
+  <text x="625" y="528" class="s">re-forecast every few readings</text>
+
+  <rect x="785" y="420" width="385" height="150" class="box" stroke="#a855f7" stroke-dasharray="7 6"/>
+  <text x="977" y="455" class="t">Live dashboard</text>
+  <text x="977" y="482" class="s">WebSocket push of new forecasts and decisions</text>
+  <text x="977" y="500" class="s">inject a zombie and watch it get flagged</text>
+
+  <path d="M230 495 H262" class="lp"/>
+  <path d="M465 495 H497" class="lp"/>
+  <path d="M625 420 V348" class="lp"/>
+  <path d="M877 262 V417" class="lp"/>
+
+  <text x="600" y="612" class="s" style="font-size:13px">solid = Phase 1 (built and running locally) · dashed purple = Phase 2 (planned) · the same AI engine and rules serve both phases</text>
+</svg>
